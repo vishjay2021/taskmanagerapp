@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Task Manager</title>
+</head>
+<body>
+    <h1>Signup</h1>
+
+    <form class="signup-form">
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" name="name">
+        </div>
+        <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" class="form-control" id="age" name="age">
+        </div>
+        <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control" id="email" name="email">
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password">
+        </div>
+        <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+        </div>
+         <div class="accountmsg"><a href="/">if you have an account? please Click here to login</a></div>
+        <button type="submit" class="btn btn-primary" id="signup-btn">Signup</button>
+    </form>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>    
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="/js/app.js"></script>
+<script>
+    const signupForm =$(".signup-form");
+
+    signupForm.validate({
+    rules:{
+        name:{
+            required: true
+        },
+        age:{
+            required: true
+        },
+        email:{
+            required: true
+        },
+        password:{
+            required: true
+        },
+        confirmPassword:{
+            required: true,
+            equalTo: "#password"
+        }
+    }
+    });
+
+    signupForm.on("submit",(e)=>{
+        e.preventDefault();
+
+        if(signupForm.valid()){
+            signup();
+        }
+    });
+
+   
+    
+const signup = async () => {
+        const url ="/api/users";
+        
+        showLoader("signup-btn", "Wait")
+
+        const data = {
+        name: $("#name").val(),
+        age: $("#age").val(),
+        email: $("#email").val(),
+        password: $("#password").val(),
+        }
+        try{
+            const response = await fetch(url, {
+            method : "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const user = await response.json();
+
+        if(user.error){
+
+           return showError(user.error);
+        }
+        showSuccess("Signup Sucess");
+        window.location.replace("/?msg=Confirm your email by login to your email");
+
+        }catch(error){
+            showError("sometthing wrong")
+        }finally{
+            hideLoader("#signup-btn") 
+        };
+    }
+
+</script>
+</body>
+</html>
